@@ -4,59 +4,116 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_background"
-    android:padding="12dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:gravity="center_vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_bg"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="--"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tv_bg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_trend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_trend"
+                android:id="@+id/tv_iob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text=""
-                android:textSize="18sp"
+                android:text="iob --"
+                android:textSize="11sp"
                 android:textColor="?android:attr/textColorSecondary" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_iob"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="iob --"
-            android:textSize="12sp"
-            android:textColor="?android:attr/textColorSecondary" />
-
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_tap"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="tap to log bolus"
-        android:textSize="11sp"
-        android:textColor="?android:attr/textColorSecondary"
-        android:gravity="center"
-        android:alpha="0.6" />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/btn_2u"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:text="2u"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:gravity="center"
+            android:background="@drawable/dose_button_bg" />
+
+        <TextView
+            android:id="@+id/btn_3u"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:text="3u"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:gravity="center"
+            android:background="@drawable/dose_button_bg" />
+
+        <TextView
+            android:id="@+id/btn_4u"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:text="4u"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:gravity="center"
+            android:background="@drawable/dose_button_bg" />
+
+        <TextView
+            android:id="@+id/btn_more"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:text="···"
+            android:textSize="14sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:gravity="center"
+            android:background="@drawable/dose_button_bg" />
+
+    </LinearLayout>
 
 </LinearLayout>
