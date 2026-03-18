@@ -18,14 +18,12 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
-import kotlin.math.max
 
 const val PROXY_URL = "https://dexcom-proxy-py.onrender.com"
 const val ACTION_LOG_DOSE = "com.m0xtail.boluswidget.LOG_DOSE"
 const val ACTION_REFRESH = "com.m0xtail.boluswidget.REFRESH"
 const val EXTRA_DOSE = "dose"
 
-// Novolog IOB model: full dose until peak (75min), linear decay to 0 at 195min
 const val PEAK_MIN = 75.0
 const val DURATION_MIN = 195.0
 
@@ -61,12 +59,29 @@ class BolusWidgetReceiver : AppWidgetProvider() {
                 if (dose > 0) logDose(context, dose)
             }
             ACTION_REFRESH -> refreshData(context)
-            AppWidgetManager.ACTION_APPWIDGET_UPDATE -> {
-                val mgr = AppWidgetManager.getInstance(context)
-                val ids = mgr.getAppWidgetIds(ComponentName(context, BolusWidgetReceiver::class.java))
-                ids.forEach { updateWidget(context, mgr, it) }
-            }
         }
+    }
+
+    private fun makeDosePendingIntent(context: Context, dose: Double, requestCode: Int): PendingIntent {
+        val intent = Intent(context, BolusWidgetReceiver::class.java).apply {
+            action = ACTION_LOG_DOSE
+            putExtra(EXTRA_DOSE, dose)
+        }
+        return PendingIntent.getBroadcast(context, requestCode, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+    }
+
+    private fun makeDialogPendingIntent(context: Context): PendingIntent {
+        val prefs = context.getSharedPreferences("bolus_widget", Context.MODE_PRIVATE)
+        val bg = prefs.getString("bg", "--") ?: "--"
+        val trend = prefs.getString("trend", "") ?: ""
+        val intent = Intent(context, CustomDoseActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("bg", bg)
+            putExtra("trend", trend)
+        }
+        return PendingIntent.getActivity(context, 99, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
     private fun updateWidget(context: Context, mgr: AppWidgetManager, id: Int) {
@@ -80,17 +95,17 @@ class BolusWidgetReceiver : AppWidgetProvider() {
         views.setTextViewText(R.id.tv_trend, trend)
         views.setTextViewText(R.id.tv_iob, "iob %.1fu".format(iob))
 
-        // Tap widget → open dose dialog
-        val dialogIntent = Intent(context, CustomDoseActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("bg", bg)
-            putExtra("trend", trend)
-        }
-        val pi = PendingIntent.getActivity(context, 0, dialogIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        views.setOnClickPendingIntent(R.id.tv_tap, pi)
-        views.setOnClickPendingIntent(R.id.tv_bg, pi)
-        views.setOnClickPendingIntent(R.id.tv_iob, pi)
+        // Direct dose buttons
+        views.setOnClickPendingIntent(R.id.btn_2u, makeDosePendingIntent(context, 2.0, 2))
+        views.setOnClickPendingIntent(R.id.btn_3u, makeDosePendingIntent(context, 3.0, 3))
+        views.setOnClickPendingIntent(R.id.btn_4u, makeDosePendingIntent(context, 4.0, 4))
+
+        // More button opens full dialog
+        views.setOnClickPendingIntent(R.id.btn_more, makeDialogPendingIntent(context))
+
+        // Tap BG/IOB also opens dialog
+        views.setOnClickPendingIntent(R.id.tv_bg, makeDialogPendingIntent(context))
+        views.setOnClickPendingIntent(R.id.tv_iob, makeDialogPendingIntent(context))
 
         mgr.updateAppWidget(id, views)
     }
@@ -98,7 +113,6 @@ class BolusWidgetReceiver : AppWidgetProvider() {
     private fun refreshData(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Fetch BG
                 val bgReq = Request.Builder().url("$PROXY_URL/bg").build()
                 val bgResp = client.newCall(bgReq).execute()
                 if (bgResp.isSuccessful) {
@@ -109,7 +123,6 @@ class BolusWidgetReceiver : AppWidgetProvider() {
                         .edit().putString("bg", bg).putString("trend", trend).apply()
                 }
 
-                // Fetch entries for IOB
                 val entriesReq = Request.Builder().url("$PROXY_URL/entries").build()
                 val entriesResp = client.newCall(entriesReq).execute()
                 if (entriesResp.isSuccessful) {
