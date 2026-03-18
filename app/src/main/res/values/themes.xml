@@ -3,12 +3,3 @@
     <style name="Theme.BolusWidget" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
     <style name="Theme.BolusWidget.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog" />
 </resources>
-```
-
-And in `app/build.gradle`, replace the material dependency line:
-```
-implementation 'com.google.android.material:material:1.11.0'
-```
-with:
-```
-implementation 'com.google.android.material:material:1.9.0'
