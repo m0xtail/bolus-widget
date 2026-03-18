@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.BolusWidget">
+
+        <activity
+            android:name=".CustomDoseActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BolusWidget.Dialog"
+            android:windowSoftInputMode="stateVisible" />
+
+        <receiver
+            android:name=".BolusWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.m0xtail.boluswidget.LOG_DOSE" />
+                <action android:name="com.m0xtail.boluswidget.REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/bolus_widget_info" />
+        </receiver>
+
+    </application>
+
+</manifest>

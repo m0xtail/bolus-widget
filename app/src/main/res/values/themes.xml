@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BolusWidget" parent="Theme.Material3.DynamicColors.DayNight" />
+    <style name="Theme.BolusWidget.Dialog" parent="Theme.Material3.DynamicColors.DayNight.Dialog" />
+</resources>
